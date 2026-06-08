@@ -123,23 +123,27 @@ function amorcerVoix() {
   synth.speak(u);
 }
 
-function dire(texte, vitesse) {
+function dire(texte, vitesse, surFin) {
   const u = new SpeechSynthesisUtterance(texte);
   u.lang = "fr-FR";
   u.rate = vitesse;
   if (voixFr) u.voice = voixFr;
+  if (surFin) u.addEventListener("end", surFin);
   synth.speak(u);
 }
 
-function parler(texte, vitesse = 0.85) {
-  if (!synth) return;
+function parler(texte, vitesse = 0.85, surFin) {
+  if (!synth) {
+    if (surFin) surFin();
+    return;
+  }
   if (synth.speaking || synth.pending) {
     // une voix parle déjà : on l'arrête puis on laisse le moteur respirer
     // (sinon le début du nouveau mot est coupé).
     synth.cancel();
-    setTimeout(() => dire(texte, vitesse), 150);
+    setTimeout(() => dire(texte, vitesse, surFin), 150);
   } else {
-    dire(texte, vitesse);
+    dire(texte, vitesse, surFin);
   }
 }
 
@@ -313,11 +317,10 @@ function reussirSyll() {
   $("#syll-feedback").textContent = sansFaute
     ? `Parfait, sans erreur ! 🌟 +${XP_SYLLABE + XP_BONUS} 💎`
     : `Bien joué ! 🧩 +${XP_SYLLABE} 💎`;
-  parler(sansFaute ? "Parfait !" : "Bravo !");
-  // tout juste → on enchaîne tout seul sur l'écriture
-  setTimeout(() => {
+  // tout juste → on enchaîne tout seul sur l'écriture, une fois la phrase dite
+  parler(`${sansFaute ? "Parfait" : "Bravo"} ! Tu as trouvé : ${motCourant().mot}`, 0.85, () => {
     if (screens.syll.classList.contains("active")) lancerEcriture();
-  }, 1400);
+  });
 }
 
 // ===========================================================================
