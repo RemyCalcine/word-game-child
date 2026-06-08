@@ -23,8 +23,13 @@
 // ===========================================================================
 
 const MOTS = [
-  "ciel",
+  "ci-el",
   { mot: "mi-lieu", indice: "Le centre de quelque chose" },
   "fa-mille",
   "fille",
+  "yeux",
+  "o-reilles",
+  "chien",
+  "pre-mier",
+  "pre-mi-ère",
 ];
