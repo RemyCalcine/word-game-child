@@ -153,6 +153,10 @@ function majHud() {
 
 function motCourant() { return MOTS_LISTE[etat.index]; }
 
+// Nombre d'étapes pour le mot courant : 2 (écoute + écriture) si une seule
+// syllabe, sinon 3 (avec l'étape syllabes). Sert à numéroter les étapes.
+function nbEtapes() { return motCourant().syllabes.length > 1 ? 3 : 2; }
+
 // --- 6. Construire les blocs-lettres -------------------------------------
 function construireBlocs(conteneur, mot, { caches = false } = {}) {
   conteneur.innerHTML = "";
@@ -193,6 +197,7 @@ function lancerDecouverte() {
   const m = motCourant();
   $("#learn-hint").textContent = m.indice;
   construireBlocs($("#learn-blocks"), m.mot);
+  $("#screen-learn .step-label").textContent = `🔊 Étape 1/${nbEtapes()} — Écoute le mot`;
   // Étape 1 d'un mot à 1 syllabe : on propose directement l'écriture.
   $("#btn-to-syll").textContent = m.syllabes.length > 1
     ? "🧩 Jouer avec les syllabes"
@@ -242,6 +247,7 @@ function lancerSyllabes() {
   syllCible = m.syllabes;
   syllPlacees = 0;
   syllErreurs = 0;
+  $("#screen-syll .step-label").textContent = "🧩 Étape 2/3 — Reconstruis le mot";
   $("#syll-feedback").textContent = "";
   montrerRetour(true);
 
@@ -324,6 +330,7 @@ function lancerEcriture() {
   const { mot } = motCourant();
   blocsEcriture = construireBlocs($("#write-blocks"), mot, { caches: true });
   saisie = "";
+  $("#screen-write .step-label").textContent = `⛏️ Étape ${nbEtapes()}/${nbEtapes()} — Écris le mot`;
   $("#write-feedback").textContent = "";
   montrerRetour(true);
   montrer("write");
