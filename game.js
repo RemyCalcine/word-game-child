@@ -165,16 +165,40 @@ function construireBlocs(conteneur, mot, { caches = false } = {}) {
   return [...conteneur.children];
 }
 
+// Flèche retour : on peut la cacher quand il n'y a rien derrière.
+function montrerRetour(visible) {
+  $("#btn-back").style.visibility = visible ? "visible" : "hidden";
+}
+
+// Revenir à l'étape précédente (ou au mot précédent depuis l'écoute).
+function retour() {
+  const actif = document.querySelector(".screen.active");
+  if (!actif) return;
+  if (actif.id === "screen-write") {
+    motCourant().syllabes.length > 1 ? lancerSyllabes() : lancerDecouverte();
+  } else if (actif.id === "screen-syll") {
+    lancerDecouverte();
+  } else if (actif.id === "screen-learn" && etat.index > 0) {
+    etat.index--;
+    lancerDecouverte();
+  }
+}
+
 // ===========================================================================
-//  ÉTAPE 1 — DÉCOUVERTE
+//  ÉTAPE 1 — ÉCOUTE
 // ===========================================================================
 function lancerDecouverte() {
   majHud();
-  const { mot, indice } = motCourant();
-  $("#learn-hint").textContent = indice;
-  construireBlocs($("#learn-blocks"), mot);
+  montrerRetour(etat.index > 0); // depuis le 1er mot, rien derrière
+  const m = motCourant();
+  $("#learn-hint").textContent = m.indice;
+  construireBlocs($("#learn-blocks"), m.mot);
+  // Étape 1 d'un mot à 1 syllabe : on propose directement l'écriture.
+  $("#btn-to-syll").textContent = m.syllabes.length > 1
+    ? "🧩 Jouer avec les syllabes"
+    : "✏️ Écris le mot";
   montrer("learn");
-  parler(mot);
+  parler(m.mot);
 }
 
 function epeler() {
@@ -219,7 +243,7 @@ function lancerSyllabes() {
   syllPlacees = 0;
   syllErreurs = 0;
   $("#syll-feedback").textContent = "";
-  $("#btn-syll-next").classList.add("hidden");
+  montrerRetour(true);
 
   const slots = $("#syll-slots");
   slots.innerHTML = "";
@@ -283,8 +307,11 @@ function reussirSyll() {
   $("#syll-feedback").textContent = sansFaute
     ? `Parfait, sans erreur ! 🌟 +${XP_SYLLABE + XP_BONUS} 💎`
     : `Bien joué ! 🧩 +${XP_SYLLABE} 💎`;
-  $("#btn-syll-next").classList.remove("hidden");
   parler(sansFaute ? "Parfait !" : "Bravo !");
+  // tout juste → on enchaîne tout seul sur l'écriture
+  setTimeout(() => {
+    if (screens.syll.classList.contains("active")) lancerEcriture();
+  }, 1400);
 }
 
 // ===========================================================================
@@ -298,6 +325,7 @@ function lancerEcriture() {
   blocsEcriture = construireBlocs($("#write-blocks"), mot, { caches: true });
   saisie = "";
   $("#write-feedback").textContent = "";
+  montrerRetour(true);
   montrer("write");
 }
 
@@ -356,6 +384,7 @@ function reussir() {
   const { mot } = motCourant();
   $("#win-word").textContent = `Tu as écrit « ${mot} » !`;
   majHud();
+  montrerRetour(false); // rien à reprendre depuis l'écran de réussite
   $("#progress-bar").style.width = ((etat.index + 1) / MOTS_LISTE.length) * 100 + "%";
   montrer("win");
   parler("Bravo !");
@@ -400,7 +429,7 @@ $("#btn-listen-2").addEventListener("click", () => parler(motCourant().mot));
 $("#btn-listen-syll").addEventListener("click", () => parler(motCourant().mot));
 $("#btn-spell").addEventListener("click", epeler);
 $("#btn-to-syll").addEventListener("click", lancerSyllabes);
-$("#btn-syll-next").addEventListener("click", lancerEcriture);
+$("#btn-back").addEventListener("click", retour);
 $("#btn-next").addEventListener("click", motSuivant);
 $("#btn-replay").addEventListener("click", recommencer);
 

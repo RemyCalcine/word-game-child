@@ -11,8 +11,9 @@
 </head>
 <body>
 
-  <!-- Bandeau du haut : progression + diamants -->
+  <!-- Bandeau du haut : retour + progression + diamants -->
   <header id="hud" class="hidden">
+    <button id="btn-back" class="back-btn" title="Revenir en arrière">←</button>
     <div class="hud-progress">
       <span id="hud-level">Mot 1 / 4</span>
       <div class="progress-track"><div id="progress-bar"></div></div>
@@ -30,9 +31,9 @@
       <button id="btn-start" class="mc-btn mc-btn--green">▶ Commencer</button>
     </section>
 
-    <!-- ÉCRAN DÉCOUVERTE -->
+    <!-- ÉCRAN 1 — ÉCOUTE -->
     <section id="screen-learn" class="screen">
-      <p class="step-label">🟩 Étape 1 — Observe le mot</p>
+      <p class="step-label">🔊 Étape 1 — Écoute le mot</p>
       <p id="learn-hint" class="hint"></p>
       <div id="learn-blocks" class="word-blocks"></div>
       <div class="row">
@@ -42,14 +43,13 @@
       <button id="btn-to-syll" class="mc-btn mc-btn--green">🧩 Jouer avec les syllabes</button>
     </section>
 
-    <!-- ÉCRAN SYLLABES -->
+    <!-- ÉCRAN 2 — SYLLABES -->
     <section id="screen-syll" class="screen">
       <p class="step-label">🧩 Étape 2 — Reconstruis le mot</p>
       <button id="btn-listen-syll" class="mc-btn mc-btn--blue small">🔊 Réécouter</button>
       <div id="syll-slots" class="syll-row"></div>
       <div id="syll-bank" class="syll-row bank"></div>
       <p id="syll-feedback" class="feedback"></p>
-      <button id="btn-syll-next" class="mc-btn mc-btn--green hidden">✏️ Écris le mot&nbsp;!</button>
     </section>
 
     <!-- ÉCRAN ÉCRITURE -->

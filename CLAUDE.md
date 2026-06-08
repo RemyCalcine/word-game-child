@@ -41,7 +41,8 @@ Conventions importantes :
 
 - `game.js` lit la variable globale `MOTS` (définie dans `words.js`, chargé avant). Tout passe par `normaliser()` puis `MOTS_LISTE` (chaque entrée → `{ mot, indice, syllabes }`).
 - **Syllabes hybrides** : tirets dans `words.js` = découpage du parent ; sinon `decouperAuto()` (heuristique français, volontairement imparfaite — les sons piège se corrigent avec un tiret). Le `mot` réel = la chaîne sans les tirets.
-- Puzzle syllabes : l'enfant ne peut poser que la **bonne syllabe suivante** (pas de placement faux possible) ; une erreur ne fait que secouer la tuile. Bonus 💎 si reconstruit sans erreur ; indice clignotant après 3 erreurs.
+- Puzzle syllabes : l'enfant ne peut poser que la **bonne syllabe suivante** (pas de placement faux possible) ; une erreur ne fait que secouer la tuile. Bonus 💎 si reconstruit sans erreur ; indice clignotant après 3 erreurs. Puzzle réussi → passage **automatique** à l'écriture (pas de bouton).
+- Navigation : une **flèche ← retour** dans le HUD (`#btn-back` / `retour()`) revient à l'étape précédente du mot ; sur l'écran d'écoute (étape 1) elle revient au mot précédent, et est masquée sur le tout premier mot (`montrerRetour()`, via `visibility` pour garder la place). Le libellé du bouton de l'étape 1 s'adapte : « Jouer avec les syllabes » ou « Écris le mot » si le mot n'a qu'une syllabe.
 - La saisie de l'enfant à l'écriture est captée par un **listener `keydown` sur `document`** (pas de champ input), actif seulement quand l'écran d'écriture est `.active`. Ne pas réintroduire de champ caché à focuser (source de bugs de focus).
 - Comparaison des lettres en minuscules, accents inclus (mots français).
 
