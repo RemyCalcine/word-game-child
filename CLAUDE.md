@@ -26,38 +26,38 @@ Univers visuel inspiré de **Minecraft** (l'enfant adore) : blocs, pixel art, pa
 
 ### Stack & architecture
 
-Application web **statique** : HTML + CSS + JavaScript pur, **sans framework ni build**. Pas de stack lourde sans raison.
+Application **Vite + React** (JS, pas TypeScript). Pas de stack lourde sans raison : pas de backend, pas de compte, pas de persistance (le score reste en mémoire pour la session).
 
-Pour chaque mot, 3 étapes (machine à états entre écrans) : **Découverte → 🧩 Syllabes → ✏️ Écriture → 🎉 Bravo**. Un mot d'une seule syllabe saute l'étape Syllabes.
+Pour chaque mot, 3 étapes (machine à états entre écrans React) : **Découverte → 🧩 Syllabes → ✏️ Écriture → 🎉 Bravo**. Un mot d'une seule syllabe saute l'étape Syllabes. Un mode optionnel **Nether** (épreuve de rappel sans blocs-lettres) est accessible depuis l'écran de fin si au moins un mot est tagué `nether: true`.
 
-Fichiers (à plat, racine du projet) :
+Fichiers principaux (`src/`) :
 
-- `index.html` — les écrans du jeu (accueil, découverte, syllabes, écriture, réussite, fin), masqués/affichés via la classe `.active`.
-- `style.css` — thème « Minecraft » (variables CSS de palette en `:root`, boutons en relief, blocs-lettres, tuiles syllabes).
-- `words.js` — **la seule chose que le parent édite** : le tableau `MOTS`. Une entrée = `"mot"`, `"mo-t"` (tirets = découpage syllabes choisi) ou `{ mot, indice }`.
-- `game.js` — la logique : machine à états entre écrans, génération des niveaux depuis `MOTS`, découpage en syllabes, puzzle de reconstitution, capture clavier, voix (`speechSynthesis`, fr-FR), score/diamants.
+- `src/App.jsx` — la machine à états entre écrans (équivalent de l'ancien `game.js`) : génération des niveaux depuis `MOTS`, score/diamants, enchaînement des écrans.
+- `src/words.js` — **la seule chose que le parent édite** : le tableau `MOTS`. Une entrée = `"mot"`, `"mo-t"` (tirets = découpage syllabes choisi) ou `{ mot, indice, nether }`. Le champ optionnel `nether: true` tague un mot pour l'épreuve Nether (sinon le portail Nether n'apparaît pas du tout).
+- `src/wordList.js` — logique pure portée de l'ancien `game.js` : `normaliser()` et `decouperAuto()` (découpage syllabes), produit `MOTS_LISTE` (chaque entrée → `{ mot, indice, syllabes, nether }`).
+- `src/voice.js` — synthèse vocale (`speechSynthesis`, fr-FR) : `chargerVoix`/`amorcerVoix`/`dire`/`parler`.
+- `src/screens/` — un composant par écran (`StartScreen`, `LearnScreen`, `SyllablesScreen`, `WriteScreen`, `WinScreen`, `EndScreen`, plus `screens/nether/` pour le mode Nether). `WriteScreen` est réutilisé pour l'écriture normale et pour l'épreuve Nether via une prop.
+- `src/components/` — composants visuels du thème « Minecraft » (boutons en relief, blocs-lettres, tuiles syllabes, HUD, etc.), thème CSS dans `src/styles/tokens.css` et `src/index.css`.
 
 Conventions importantes :
 
-- `game.js` lit la variable globale `MOTS` (définie dans `words.js`, chargé avant). Tout passe par `normaliser()` puis `MOTS_LISTE` (chaque entrée → `{ mot, indice, syllabes }`).
+- `App.jsx` tient l'état React (écran courant, index du mot, score) et lit `MOTS_LISTE` (dérivée de `MOTS`, définie dans `src/words.js`, via `normaliser()` dans `wordList.js`).
 - **Syllabes hybrides** : tirets dans `words.js` = découpage du parent ; sinon `decouperAuto()` (heuristique français, volontairement imparfaite — les sons piège se corrigent avec un tiret). Le `mot` réel = la chaîne sans les tirets.
 - Puzzle syllabes : l'enfant ne peut poser que la **bonne syllabe suivante** (pas de placement faux possible) ; une erreur ne fait que secouer la tuile. Bonus 💎 si reconstruit sans erreur ; indice clignotant après 3 erreurs. Puzzle réussi → passage **automatique** à l'écriture (pas de bouton).
-- Navigation : une **flèche ← retour** dans le HUD (`#btn-back` / `retour()`) revient à l'étape précédente du mot ; sur l'écran d'écoute (étape 1) elle revient au mot précédent, et est masquée sur le tout premier mot (`montrerRetour()`, via `visibility` pour garder la place). Le libellé du bouton de l'étape 1 s'adapte : « Jouer avec les syllabes » ou « Écris le mot » si le mot n'a qu'une syllabe.
-- La saisie de l'enfant à l'écriture est captée par un **listener `keydown` sur `document`** (pas de champ input), actif seulement quand l'écran d'écriture est `.active`. Ne pas réintroduire de champ caché à focuser (source de bugs de focus).
+- Navigation : une **flèche ← retour** dans le HUD revient à l'étape précédente du mot ; sur l'écran d'écoute (étape 1) elle revient au mot précédent, et est masquée sur le tout premier mot (via `visibility` pour garder la place). Le libellé du bouton de l'étape 1 s'adapte : « Jouer avec les syllabes » ou « Écris le mot » si le mot n'a qu'une syllabe.
+- La saisie de l'enfant à l'écriture est captée par un **listener `keydown` sur `document`** (pas de champ input), géré dans `WriteScreen.jsx` via un `useEffect` qui l'ajoute/le retire selon l'écran actif. Ne pas réintroduire de champ caché à focuser (source de bugs de focus).
 - Comparaison des lettres en minuscules, accents inclus (mots français).
 
 ### Lancer / tester
 
-Pas de build. **Ouvrir `index.html`** directement dans un navigateur (double-clic) suffit — tout est côté client, aucun `fetch`, donc `file://` fonctionne.
+Projet Vite+React : `npm install` puis `npm run dev` pour lancer en local
+(`http://localhost:5173`), `npm run build` pour produire un build statique
+dans `dist/` (nécessite un serveur HTTP pour être ouvert, pas de `file://`
+direct — modules ES). Pas de back-end, pas de compte.
 
-Pour vérifier dans un navigateur piloté (extension Chrome), servir le dossier car l'outil de navigation gère mal `file://` :
-
-```
-npx --yes http-server -p 8731 -c-1
-# puis http://localhost:8731/index.html
-```
-
-Pas de tests automatisés pour l'instant (projet volontairement minimal). Vérifier les changements en jouant la boucle dans le navigateur. `decouperAuto()` étant une fonction pure, on peut la tester vite avec `node -e`.
+`npm run test` lance les tests Vitest (logique pure de découpage syllabes
+dans `src/wordList.test.js`). Pas de tests UI automatisés : vérifier les
+changements en jouant la boucle dans le navigateur.
 
 ## Comment travailler dans ce repo
 
