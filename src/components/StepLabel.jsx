@@ -1,6 +1,6 @@
 import React from "react";
 
-export function StepLabel({ children }) {
+export function StepLabel({ children, style }) {
   return (
     <p
       style={{
@@ -11,6 +11,7 @@ export function StepLabel({ children }) {
         margin: 0,
         textAlign: "center",
         lineHeight: 1.5,
+        ...style,
       }}
     >
       {children}

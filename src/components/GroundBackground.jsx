@@ -1,6 +1,6 @@
 import React from "react";
 
-export function GroundBackground({ nether = false }) {
+export function GroundBackground({ nether = false, style }) {
   if (nether) {
     const embers = Array.from({ length: 9 }, (_, i) => i);
     return (
@@ -9,6 +9,7 @@ export function GroundBackground({ nether = false }) {
         style={{
           position: "fixed", inset: 0, zIndex: -1, overflow: "hidden",
           background: "radial-gradient(120% 90% at 50% 118%, #b8480c66 0%, #2a0f0c 48%, #160a14 100%)",
+          ...style,
         }}
       >
         <div className="block-tex" style={{ position: "absolute", top: 0, left: 0, right: 0, height: "26%", backgroundImage: "var(--tex-netherrack)", backgroundSize: "48px 48px", opacity: 0.85, WebkitMaskImage: "linear-gradient(#000, transparent)", maskImage: "linear-gradient(#000, transparent)" }} />
@@ -22,7 +23,7 @@ export function GroundBackground({ nether = false }) {
     );
   }
   return (
-    <div aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: -1, overflow: "hidden" }}>
+    <div aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: -1, overflow: "hidden", ...style }}>
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "44%", background: "linear-gradient(180deg, var(--sky-top), var(--sky-bottom))" }}>
         <span style={{ position: "absolute", top: "26%", left: "14%", width: 110, height: 26, background: "#ffffffcc", boxShadow: "26px 0 0 #ffffffcc, -20px 14px 0 #ffffffbb, 40px 12px 0 #ffffffbb" }} />
         <span style={{ position: "absolute", top: "52%", left: "66%", width: 84, height: 22, background: "#ffffffbb", boxShadow: "22px 0 0 #ffffffbb, -16px 12px 0 #ffffffaa" }} />
