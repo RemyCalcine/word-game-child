@@ -35,7 +35,7 @@ Fichiers principaux (`src/`) :
 - `src/App.jsx` — la machine à états entre écrans (équivalent de l'ancien `game.js`) : génération des niveaux depuis `MOTS`, score/diamants, enchaînement des écrans.
 - `src/words.js` — **la seule chose que le parent édite** : le tableau `MOTS`. Une entrée = `"mot"`, `"mo-t"` (tirets = découpage syllabes choisi) ou `{ mot, indice, nether }`. Le champ optionnel `nether: true` tague un mot pour l'épreuve Nether (sinon le portail Nether n'apparaît pas du tout).
 - `src/wordList.js` — logique pure portée de l'ancien `game.js` : `normaliser()` et `decouperAuto()` (découpage syllabes), produit `MOTS_LISTE` (chaque entrée → `{ mot, indice, syllabes, nether }`).
-- `src/voice.js` — synthèse vocale (`speechSynthesis`, fr-FR) : `chargerVoix`/`amorcerVoix`/`dire`/`parler`.
+- `src/voice.js` — synthèse vocale (`speechSynthesis`, fr-FR) : `amorcerVoix`/`parler`/`annulerVoix`.
 - `src/screens/` — un composant par écran (`StartScreen`, `LearnScreen`, `SyllablesScreen`, `WriteScreen`, `WinScreen`, `EndScreen`, plus `screens/nether/` pour le mode Nether). `WriteScreen` est réutilisé pour l'écriture normale et pour l'épreuve Nether via une prop.
 - `src/components/` — composants visuels du thème « Minecraft » (boutons en relief, blocs-lettres, tuiles syllabes, HUD, etc.), thème CSS dans `src/styles/tokens.css` et `src/index.css`.
 
