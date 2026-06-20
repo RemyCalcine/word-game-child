@@ -59,14 +59,13 @@ word-game/
 │   │   └── PortalButton.jsx
 │   ├── screens/
 │   │   ├── StartScreen.jsx
-│   │   ├── LearnScreen.jsx       # écoute (étape 1)
+│   │   ├── LearnScreen.jsx       # écoute (étape 1) + épeler
 │   │   ├── SyllablesScreen.jsx   # étape 2
-│   │   ├── WriteScreen.jsx       # étape 3
+│   │   ├── WriteScreen.jsx       # étape 3, réutilisé en mode nether (prop `nether`)
 │   │   ├── WinScreen.jsx
 │   │   ├── EndScreen.jsx
 │   │   └── nether/
 │   │       ├── NetherIntroScreen.jsx
-│   │       ├── NetherWriteScreen.jsx
 │   │       ├── NetherFlashScreen.jsx   # feedback bonne/mauvaise réponse
 │   │       └── NetherEndScreen.jsx
 │   ├── styles/
@@ -134,27 +133,45 @@ de comportement :
 - Voix : `voice.js` porte `chargerVoix/amorcerVoix/dire/parler` tels quels
   (même contournement du moteur Chrome : `cancel()` puis `setTimeout(150ms)`
   avant de reparler).
+- Épeler (`#btn-spell` → `epeler()`) : porté dans `LearnScreen.jsx` —
+  surlignage lettre par lettre (état `spelling` de `LetterTile`) au rythme
+  de 750ms, voix ralentie (`vitesse 0.7`) par lettre puis le mot entier à la
+  fin, avec `synth.cancel()` avant de démarrer la séquence.
+- `Étape X/X` sur l'écran d'écriture : `nbEtapes()` est aussi le numérateur
+  affiché pour l'écriture (toujours la dernière étape, donc "2/2" ou "3/3",
+  jamais "3/4") — particularité à reproduire telle quelle, pas un bug.
+- Rejouer (`btn-replay` → `recommencer()`) : remet `index` et `xp` à 0 et
+  relance `lancerDecouverte()`. Réinitialise aussi `netherIndex` et
+  `netherWordsOk` (et l'XP gagné dans le Nether, cf. section Nether) pour
+  repartir d'une session entièrement neuve.
 
 ## Mode Nether (nouveau)
 
 Déclenché depuis `EndScreen` via `PortalButton`, visible **seulement si** au
 moins un mot de `MOTS_LISTE` a `nether: true`. Sinon le bouton est absent
-(pas grisé).
+(pas grisé) — c'est un comportement voulu : un parent qui ne tague aucun mot
+ne verra jamais le portail, le jeu reste identique à aujourd'hui plus
+l'habillage visuel. La liste de mots livrée par défaut (`src/words.js`)
+taguera 1-2 mots à titre d'exemple pour que la fonctionnalité soit visible et
+testable dès le premier lancement.
 
 Sous-liste : `motsNether = MOTS_LISTE.filter(m => m.nether)`.
 
 Écrans (`screens/nether/`) :
 1. **NetherIntroScreen** — présente l'épreuve (« Pas de blocs pour t'aider »),
    bouton pour démarrer.
-2. **NetherWriteScreen** — l'enfant entend le mot (`parler()`) puis le tape
-   de mémoire au clavier ; pas de blocs-lettres affichés pendant la saisie
-   (contrairement à l'étape écriture normale qui montre des cases vides à
-   remplir). Réutilise le hook `useWriting.js`.
+2. **WriteScreen** (réutilisé, prop `nether={true}`) — l'enfant entend le mot
+   (`parler()`) puis le tape de mémoire au clavier ; pas de blocs-lettres
+   affichés pendant la saisie (contrairement à l'étape écriture normale qui
+   montre des cases vides à remplir). Réutilise le hook `useWriting.js` ; le
+   composant bascule son rendu (pas de `LetterTile`) et son thème
+   (`.theme-nether`) selon la prop, en s'inspirant du `kit-app.jsx` du
+   design system qui suit la même approche (un seul composant, deux modes).
 3. **NetherFlashScreen** — feedback bref (correct/à revoir) puis passage
    automatique au mot nether suivant, ou vers `NetherEndScreen` si c'était le
    dernier.
-4. **NetherEndScreen** — récapitulatif (« Nether vaincu ! », score nether),
-   bouton retour à l'accueil.
+4. **NetherEndScreen** — récapitulatif (« Nether vaincu ! », mots réussis,
+   diamants gagnés dans le Nether), bouton retour à l'accueil.
 
 Thème : `class="theme-nether"` posée sur le conteneur racine pendant tout le
 flow Nether, qui bascule les tokens CSS sémantiques (cf.
@@ -162,8 +179,10 @@ flow Nether, qui bascule les tokens CSS sémantiques (cf.
 encourageant, jamais punitif, conformément au design system (`readme.md`
 section « THE NETHER »).
 
-Pas de XP/diamants spécifiques au Nether dans cette v1 (pas demandé) — juste
-un compteur de mots réussis affiché sur `NetherEndScreen`.
+XP : chaque mot nether réussi rapporte **+15 💎** (cohérent avec le
+prototype `kit-app.jsx` du design system), ajoutés à `etat.xp` au même
+endroit que le score principal — donc visibles aussi sur le HUD si on revient
+à l'accueil. `recommencer()` réinitialise ce total comme le reste de l'XP.
 
 ## Visuel — composants (`src/components/`)
 
@@ -254,5 +273,7 @@ minimal) ; on garde cette approche :
 - `npm run build` produit des fichiers qui nécessitent un serveur HTTP (pas
   de `file://` direct comme avant, à cause des modules ES) — `npm run dev`
   ou un serveur statique (`npx http-server` déjà mentionné dans
-  `CLAUDE.md`) seront nécessaires pour jouer. À documenter clairement dans
-  le `CLAUDE.md` mis à jour.
+  `CLAUDE.md`) seront nécessaires pour jouer. La phrase actuelle du
+  `CLAUDE.md` (« aucun `fetch`, donc `file://` fonctionne ») devient fausse
+  et doit être **supprimée/réécrite**, pas simplement complétée, dans
+  l'étape 10 de la migration.
