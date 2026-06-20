@@ -25,7 +25,8 @@
 - [ ] **Step 1: Scaffolder avec Vite**
 
 Run: `npm create vite@latest . -- --template react`
-(Choisir de continuer dans un dossier non vide si demandé — les fichiers vanilla existants restent intacts pour l'instant, on les supprimera à la Task 11.)
+
+Le dossier n'est pas vide (fichiers vanilla actuels) : l'outil va le signaler et demander confirmation. Choisir l'option qui continue malgré les fichiers existants. Vite va **écraser `index.html`** (un fichier du même nom existe déjà — c'est le shell HTML du jeu vanilla) pour le remplacer par son propre shell : c'est voulu, `index.html` devient le point d'entrée du nouveau projet React dès cette étape. `style.css`, `game.js` et l'ancien `words.js` à la racine ne sont pas touchés par le scaffold et seront supprimés explicitement à la Task 11.
 
 - [ ] **Step 2: Installer les dépendances**
 
@@ -622,12 +623,9 @@ Ajouter dans `src/styles/tokens.css` (à la suite des keyframes existantes, ou c
 }
 ```
 
-- [ ] **Step 7: Vérifier qu'il n'y a pas d'erreur d'import (build à blanc)**
+**Note :** ces fichiers ne sont importés par rien encore (Vite ne les inclura dans le build qu'une fois utilisés par un écran). Leur validité syntaxique sera vérifiée concrètement à la Task 8/9 quand les écrans les importeront réellement — pas besoin d'une vérification à blanc ici.
 
-Run: `npm run build`
-Expected: build réussit sans erreur (les composants ne sont pas encore utilisés activement, mais doivent au moins être syntaxiquement valides — au besoin, importer rapidement chacun dans `App.jsx` temporairement pour forcer la vérification, puis retirer si Task 9 ne les utilise pas tous immédiatement).
-
-- [ ] **Step 8: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add src/components
@@ -697,7 +695,7 @@ git commit -m "Port words list to ES module, tag two example words for Nether mo
 ### Task 8: Écrans hors-Nether (`src/screens/`)
 
 **Files:**
-- Create: `src/screens/StartScreen.jsx`, `LearnScreen.jsx`, `SyllableScreen.jsx`, `WriteScreen.jsx`, `WinScreen.jsx`, `EndScreen.jsx`, `Screen.jsx` (wrapper commun)
+- Create: `src/screens/StartScreen.jsx`, `LearnScreen.jsx`, `SyllablesScreen.jsx`, `WriteScreen.jsx`, `WinScreen.jsx`, `EndScreen.jsx`, `Screen.jsx` (wrapper commun)
 
 - [ ] **Step 1: Créer le wrapper commun `Screen.jsx`**
 
@@ -819,12 +817,12 @@ export function LearnScreen({ word, nbSteps, onNext }) {
 }
 ```
 
-- [ ] **Step 4: `SyllableScreen.jsx` (puzzle syllabes)**
+- [ ] **Step 4: `SyllablesScreen.jsx` (puzzle syllabes)**
 
 Comme dans `game.js`, il faut suivre *quelles tuiles de la banque sont déjà posées* (`posees`), indépendamment de l'ordre où elles ont été cliquées — pas seulement un compteur `placees`.
 
 ```jsx
-export function SyllableScreen({ word, onDone, onScore }) {
+export function SyllablesScreen({ word, onDone, onScore }) {
   const target = word.syllabes;
   const [placees, setPlacees] = useState(0);
   const [erreurs, setErreurs] = useState(0);
@@ -883,7 +881,7 @@ export function SyllableScreen({ word, onDone, onScore }) {
               key={item.idx}
               state={isPosee ? "disabled" : isHint ? "hint" : "default"}
               onClick={() => cliquer(item)}
-              className={shakeIdx === item.idx ? "shake" : ""}
+              style={shakeIdx === item.idx ? { animation: "shake 0.35s" } : undefined}
             >
               {item.s}
             </SyllableTile>
@@ -908,7 +906,7 @@ Ajouter dans `src/styles/tokens.css` :
 .shake { animation: shake 0.35s; }
 ```
 
-**Note :** `SyllableTile` (copié en Task 6) ne connaît pas l'état `"hint"` par défaut — vérifier son code copié : il accepte `state="hint"` et ajoute la classe `is-hint` avec l'animation `lmb-clignote` déjà définie inline dans le composant (`<style>{...}</style>` interne), donc rien à ajouter côté tokens pour le clignotement, seulement pour le `shake` ci-dessus qui n'existe pas dans le composant copié.
+**Note :** `SyllableTile` (copié en Task 6) gère déjà le clignotement de l'état `"hint"` via une classe interne (`is-hint`) et une balise `<style>` embarquée — rien à ajouter côté tokens pour ça. En revanche, le composant **n'accepte pas de prop `className`** : il fixe lui-même son `className` puis fait `{...rest}`, donc un `className` passé par l'appelant écraserait silencieusement ses classes internes (et casserait le style de base + le clignotement). C'est pour ça que le secouement (`shake`) ci-dessus passe par la prop `style` (correctement fusionnée par le composant), pas par `className`.
 
 - [ ] **Step 5: `WriteScreen.jsx` (réutilisé en mode nether)**
 
@@ -1199,7 +1197,7 @@ import { GroundBackground } from "./components/GroundBackground.jsx";
 import { HudBar } from "./components/HudBar.jsx";
 import { StartScreen } from "./screens/StartScreen.jsx";
 import { LearnScreen } from "./screens/LearnScreen.jsx";
-import { SyllableScreen } from "./screens/SyllableScreen.jsx";
+import { SyllablesScreen } from "./screens/SyllablesScreen.jsx";
 import { WriteScreen } from "./screens/WriteScreen.jsx";
 import { WinScreen } from "./screens/WinScreen.jsx";
 import { EndScreen } from "./screens/EndScreen.jsx";
@@ -1321,7 +1319,7 @@ export default function App() {
         {phase === "start" && <StartScreen wordCount={MOTS_LISTE.length} onStart={commencer} />}
         {phase === "learn" && <LearnScreen key={index} word={word} nbSteps={nbEtapes} onNext={versEtapeSuivante} />}
         {phase === "syll" && (
-          <SyllableScreen key={index} word={word} onDone={() => setPhase("write")} onScore={(n) => setXp((x) => x + n)} />
+          <SyllablesScreen key={index} word={word} onDone={() => setPhase("write")} onScore={(n) => setXp((x) => x + n)} />
         )}
         {phase === "write" && (
           <WriteScreen
