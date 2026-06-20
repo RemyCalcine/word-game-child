@@ -1,2 +1,5 @@
 # Réglages locaux de Claude Code (spécifiques à la machine)
 .claude/settings.local.json
+
+# Worktrees git isolés (espaces de travail temporaires pour l'implémentation)
+.worktrees/
