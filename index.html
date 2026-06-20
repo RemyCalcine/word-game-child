@@ -1,86 +1,13 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Les Mots Blocs ⛏️</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-  <!-- Bandeau du haut : retour + progression + diamants -->
-  <header id="hud" class="hidden">
-    <button id="btn-back" class="back-btn" title="Revenir en arrière">←</button>
-    <div class="hud-progress">
-      <span id="hud-level">Mot 1 / 4</span>
-      <div class="progress-track"><div id="progress-bar"></div></div>
-    </div>
-    <div class="hud-score">💎 <span id="hud-xp">0</span></div>
-  </header>
-
-  <main id="game">
-
-    <!-- ÉCRAN ACCUEIL -->
-    <section id="screen-start" class="screen active">
-      <h1 class="title">⛏️ Les Mots Blocs</h1>
-      <p class="subtitle">Apprends tes mots de dictée bloc par bloc&nbsp;!</p>
-      <p id="start-count" class="info"></p>
-      <button id="btn-start" class="mc-btn mc-btn--green">▶ Commencer</button>
-    </section>
-
-    <!-- ÉCRAN 1 — ÉCOUTE -->
-    <section id="screen-learn" class="screen">
-      <p class="step-label">🔊 Étape 1 — Écoute le mot</p>
-      <p id="learn-hint" class="hint"></p>
-      <div id="learn-blocks" class="word-blocks"></div>
-      <div class="row">
-        <button id="btn-listen" class="mc-btn mc-btn--blue">🔊 Écouter</button>
-        <button id="btn-spell" class="mc-btn mc-btn--blue">🔤 Épeler</button>
-      </div>
-      <button id="btn-to-syll" class="mc-btn mc-btn--green">🧩 Jouer avec les syllabes</button>
-    </section>
-
-    <!-- ÉCRAN 2 — SYLLABES -->
-    <section id="screen-syll" class="screen">
-      <p class="step-label">🧩 Étape 2 — Reconstruis le mot</p>
-      <button id="btn-listen-syll" class="mc-btn mc-btn--blue small">🔊 Réécouter</button>
-      <div id="syll-slots" class="syll-row"></div>
-      <div id="syll-bank" class="syll-row bank"></div>
-      <p id="syll-feedback" class="feedback"></p>
-    </section>
-
-    <!-- ÉCRAN ÉCRITURE -->
-    <section id="screen-write" class="screen">
-      <p class="step-label">⛏️ Étape 3 — Écris le mot</p>
-      <button id="btn-listen-2" class="mc-btn mc-btn--blue small">🔊 Réécouter</button>
-      <div id="write-blocks" class="word-blocks"></div>
-      <p class="hint">⌨️ Tape le mot au clavier (Retour arrière pour corriger)</p>
-      <p id="write-feedback" class="feedback"></p>
-    </section>
-
-    <!-- ÉCRAN RÉUSSITE D'UN MOT -->
-    <section id="screen-win" class="screen">
-      <div class="celebrate">🎉</div>
-      <h2 class="title win">BRAVO&nbsp;!</h2>
-      <p id="win-word" class="info"></p>
-      <p class="xp-gain">+10 💎</p>
-      <button id="btn-next" class="mc-btn mc-btn--green">Mot suivant ➡</button>
-    </section>
-
-    <!-- ÉCRAN FINAL -->
-    <section id="screen-end" class="screen">
-      <div class="celebrate">🏆</div>
-      <h2 class="title win">Tous les mots réussis&nbsp;!</h2>
-      <p id="end-score" class="info"></p>
-      <button id="btn-replay" class="mc-btn mc-btn--green">🔁 Rejouer</button>
-    </section>
-
-  </main>
-
-  <script src="words.js"></script>
-  <script src="game.js"></script>
-</body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>react-migration</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
