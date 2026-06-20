@@ -1,0 +1,139 @@
+/* ===== FONTS ===== */
+@font-face {
+  font-family: "Press Start 2P";
+  font-style: normal; font-weight: 400; font-display: swap;
+  src: url("../assets/fonts/PressStart2P.woff2") format("woff2");
+}
+@font-face {
+  font-family: "VT323";
+  font-style: normal; font-weight: 400; font-display: swap;
+  src: url("../assets/fonts/VT323.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Baloo 2";
+  font-style: normal; font-weight: 400; font-display: swap;
+  src: url("../assets/fonts/Baloo2-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Baloo 2";
+  font-style: normal; font-weight: 600; font-display: swap;
+  src: url("../assets/fonts/Baloo2-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Baloo 2";
+  font-style: normal; font-weight: 700; font-display: swap;
+  src: url("../assets/fonts/Baloo2-700.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Baloo 2";
+  font-style: normal; font-weight: 800; font-display: swap;
+  src: url("../assets/fonts/Baloo2-800.woff2") format("woff2");
+}
+
+:root {
+  /* ---- Raw block fills ---- */
+  --grass: #6aab3c; --grass-dark: #4d8a2a; --grass-light: #8bc659;
+  --dirt: #7a5230; --dirt-dark: #573a20; --dirt-light: #976a44;
+  --stone: #8a8a8a; --stone-dark: #5f5f5f; --stone-light: #a8a8a8;
+  --water: #3aa6d6; --water-dark: #2a7ba0; --water-light: #5fc1e8;
+  --sky-top: #79b7e6; --sky-bottom: #a9d4f0;
+  --diamond: #5fe0d8; --diamond-dark: #34b6ae; --emerald: #17b978;
+  --gold: #f9c629; --gold-dark: #d49e10;
+  --lava: #f4801f; --lava-bright: #ff5a1f; --lava-dark: #b8480c;
+  --netherrack: #6e2b2b; --obsidian: #2a1a3e; --obsidian-deep: #1a1024;
+  --portal: #a64ad6; --portal-bright: #c060f0;
+  --ink: #2b2018; --ink-soft: #4a3b2e;
+  --cream: #f4ead0; --cream-dim: #d8cba8;
+  --paper: #fbf6e9; --paper-edge: #e7dcc0;
+  --good: #5fd35f; --good-dark: #3da53d; --good-ink: #0b3d0b;
+  --bad: #e0544f; --bad-dark: #b3332e; --warn: #f9c629;
+  --relief-light: #ffffff80; --relief-dark: #00000055;
+  --relief-light-strong: #ffffffaa; --relief-dark-strong: #00000077;
+
+  --surface-sky: linear-gradient(180deg, var(--sky-top), var(--sky-bottom));
+  --surface-grass: var(--grass); --surface-dirt: var(--dirt); --surface-stone: var(--stone);
+  --surface-card: var(--paper); --surface-overlay: #1a1024d9;
+
+  --text-on-dark: var(--cream); --text-ink: var(--ink); --text-muted: var(--ink-soft);
+  --text-good: var(--good-ink); --text-bad: #fff; --text-reward: var(--diamond);
+
+  --action-primary: var(--grass); --action-primary-edge: var(--grass-dark);
+  --action-secondary: var(--water); --action-secondary-edge: var(--water-dark);
+  --action-reward: var(--diamond); --action-reward-edge: var(--diamond-dark);
+  --action-danger: var(--bad); --action-danger-edge: var(--bad-dark);
+  --action-neutral: var(--stone); --action-neutral-edge: var(--stone-dark);
+
+  --tile-face: var(--cream); --tile-ink: var(--ink);
+  --tile-correct: var(--good); --tile-wrong: var(--bad); --tile-active: var(--diamond);
+
+  --progress-track: var(--stone-dark); --progress-fill: var(--diamond); --xp-color: var(--diamond);
+
+  /* ---- Typography ---- */
+  --font-display: "Press Start 2P", "Courier New", monospace;
+  --font-text: "Baloo 2", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "VT323", "Courier New", monospace;
+  --display-hero: 34px; --display-xl: 24px; --display-lg: 20px;
+  --display-md: 14px; --display-sm: 11px; --display-xs: 10px;
+  --text-2xl: 30px; --text-xl: 22px; --text-lg: 18px; --text-md: 16px; --text-sm: 14px;
+  --tile-letter-size: 30px; --tile-syllable-size: 26px;
+  --weight-regular: 400; --weight-medium: 600; --weight-bold: 700; --weight-black: 800;
+  --leading-display: 1.4; --leading-tight: 1.15; --leading-body: 1.45;
+  --tracking-display: 0.5px; --tracking-text: 0;
+
+  /* ---- Spacing ---- */
+  --px: 4px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 20px;
+  --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px; --space-16: 64px;
+  --radius: 0px;
+  --block-border: 4px; --block-border-thin: 3px; --block-border-thick: 6px;
+  --block-pop: 6px; --block-pop-sm: 4px; --block-pop-lg: 8px;
+  --tile-letter: 58px; --tile-letter-sm: 44px;
+  --tile-syllable-h: 60px; --tile-syllable-min: 84px;
+  --control-h: 48px; --hud-h: 64px;
+  --content-max: 720px; --gap-tiles: 10px; --gap-row: 14px; --pad-screen: 24px;
+
+  /* ---- Effects ---- */
+  --bevel: var(--relief-light) var(--relief-dark) var(--relief-dark) var(--relief-light);
+  --bevel-strong: var(--relief-light-strong) var(--relief-dark-strong) var(--relief-dark-strong) var(--relief-light-strong);
+  --bevel-inset: var(--relief-dark) var(--relief-light) var(--relief-light) var(--relief-dark);
+  --pop: 0 var(--block-pop) 0 #00000044;
+  --pop-sm: 0 var(--block-pop-sm) 0 #00000044;
+  --pop-lg: 0 var(--block-pop-lg) 0 #00000055;
+  --pop-pressed: 0 2px 0 #00000044;
+  --inset-sheen: inset 0 0 0 2px #ffffff22;
+  --text-shadow-pixel: 2px 2px 0 #00000066;
+  --text-shadow-pixel-lg: 3px 3px 0 #00000077;
+  --text-shadow-pixel-sm: 1px 1px 0 #00000055;
+  --scrim: #1a1024cc;
+  --t-press: 60ms; --t-quick: 120ms;
+  --t-pop: 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --t-progress: 350ms ease;
+
+  /* ---- Textures ---- */
+  --tex-dirt: url("../assets/textures/dirt.png");
+  --tex-grass-top: url("../assets/textures/grass_top.png");
+  --tex-grass-side: url("../assets/textures/grass_side.png");
+  --tex-stone: url("../assets/textures/stone.png");
+  --tex-planks: url("../assets/textures/planks.png");
+  --tex-sandstone: url("../assets/textures/sandstone.png");
+  --tex-netherrack: url("../assets/textures/netherrack.png");
+  --tex-obsidian: url("../assets/textures/obsidian.png");
+  --tex-nether-ground: url("../assets/textures/nether_ground.png");
+  --tex-letter: url("../assets/textures/sandstone.png");
+  --tex-tile: 48px;
+}
+
+.theme-nether {
+  --surface-card: var(--obsidian); --surface-overlay: #0d0612e6;
+  --text-on-dark: #f3e0d0; --text-ink: #f3e0d0; --text-muted: #b98c7a;
+  --action-primary: var(--lava); --action-primary-edge: var(--lava-dark);
+  --action-secondary: var(--portal); --action-secondary-edge: #6a2f9a;
+  --action-reward: var(--gold); --action-reward-edge: var(--gold-dark);
+  --tile-face: var(--obsidian); --tile-ink: #f3e0d0;
+  --tile-correct: var(--lava); --tile-wrong: #7a1f1f; --tile-active: var(--portal-bright);
+  --tex-letter: url("../assets/textures/obsidian.png");
+  --progress-track: #2a1410; --progress-fill: var(--lava-bright); --xp-color: var(--gold);
+}
+
+.pixelated { image-rendering: pixelated; image-rendering: crisp-edges; }
+.block-tex { image-rendering: pixelated; background-repeat: repeat; background-size: var(--tex-tile) var(--tex-tile); }
