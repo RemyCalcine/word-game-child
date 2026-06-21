@@ -35,6 +35,16 @@ export function WordEditor({ entrees, prenom, onValidate, onClose }) {
   function ajouter() {
     setRows((rs) => [...rs, { id: uid(), mot: "", indice: "", nether: false }]);
   }
+  function deplacer(id, delta) {
+    setRows((rs) => {
+      const i = rs.findIndex((r) => r.id === id);
+      const j = i + delta;
+      if (i < 0 || j < 0 || j >= rs.length) return rs;
+      const next = rs.slice();
+      [next[i], next[j]] = [next[j], next[i]];
+      return next;
+    });
+  }
   function reinitialiser() {
     setRows(withIds(defaultMots()));
   }
@@ -76,10 +86,11 @@ export function WordEditor({ entrees, prenom, onValidate, onClose }) {
         <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "var(--ink-soft)" }}>
           Glisse la poignée <strong>☰</strong> pour changer l'ordre. Ajoute un <strong>tiret</strong> dans le mot
           seulement si le découpage en syllabes affiché (→) est faux : ex. <em>mi-lieu</em>.
+          Coche <strong>🔥</strong> pour qu'un mot rejoigne le <strong>bonus Nether</strong> (rappel de mémoire en fin de partie).
         </p>
 
         <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-          {rows.map((r) => (
+          {rows.map((r, i) => (
             <li
               key={r.id}
               onDragOver={(e) => surGlisser(e, r.id)}
@@ -92,12 +103,16 @@ export function WordEditor({ entrees, prenom, onValidate, onClose }) {
                   onDragStart={() => setDragId(r.id)}
                   onDragEnd={() => setDragId(null)}
                   title="Glisser pour réordonner"
-                  style={{ cursor: "grab", fontSize: 20, userSelect: "none", padding: "0 4px" }}
+                  style={{ cursor: "grab", fontSize: 20, userSelect: "none", padding: "0 2px" }}
                 >
                   ☰
                 </span>
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <button type="button" onClick={() => deplacer(r.id, -1)} disabled={i === 0} title="Monter" style={{ cursor: i === 0 ? "default" : "pointer", lineHeight: 1, fontSize: 12, padding: "2px 5px", border: "2px solid var(--ink-soft)", borderRadius: "var(--radius)", background: "#fff", color: "var(--ink)", opacity: i === 0 ? 0.35 : 1 }}>▲</button>
+                  <button type="button" onClick={() => deplacer(r.id, 1)} disabled={i === rows.length - 1} title="Descendre" style={{ cursor: i === rows.length - 1 ? "default" : "pointer", lineHeight: 1, fontSize: 12, padding: "2px 5px", border: "2px solid var(--ink-soft)", borderRadius: "var(--radius)", background: "#fff", color: "var(--ink)", opacity: i === rows.length - 1 ? 0.35 : 1 }}>▼</button>
+                </div>
                 <input style={{ ...inputStyle, flex: 1 }} value={r.mot} onChange={(e) => maj(r.id, "mot", e.target.value)} placeholder="mot (ex: mi-lieu)" />
-                <label style={{ display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", fontWeight: 700 }}>
+                <label title="Mot du bonus Nether (rappel de mémoire en fin de partie)" style={{ display: "inline-flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", fontWeight: 700, cursor: "pointer" }}>
                   <input type="checkbox" checked={r.nether} onChange={(e) => maj(r.id, "nether", e.target.checked)} />
                   🔥
                 </label>
