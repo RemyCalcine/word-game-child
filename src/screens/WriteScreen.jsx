@@ -4,10 +4,12 @@ import { StepLabel } from "../components/StepLabel.jsx";
 import { LetterTile } from "../components/LetterTile.jsx";
 import { BlockButton } from "../components/BlockButton.jsx";
 import { parler } from "../voice.js";
+import { encourager } from "../messages.js";
 
-export function WriteScreen({ word, label, hint, nether = false, onWin, onSkip }) {
+export function WriteScreen({ word, label, hint, nether = false, prenom, onWin, onSkip }) {
   const [saisie, setSaisie] = useState("");
   const [shake, setShake] = useState(false);
+  const [encouragement, setEncouragement] = useState("");
   const gagne = useRef(false);
 
   useEffect(() => {
@@ -41,12 +43,13 @@ export function WriteScreen({ word, label, hint, nether = false, onWin, onSkip }
       setTimeout(onWin, 350);
     } else {
       setShake(true);
+      setEncouragement(encourager(prenom)); // encouragement varié, figé jusqu'à la prochaine tentative
       setTimeout(() => setShake(false), 350);
     }
-  }, [saisie, word.mot, onWin]);
+  }, [saisie, word.mot, onWin, prenom]);
 
   const errare = saisie.length === word.mot.length && saisie !== word.mot;
-  const feedback = errare ? (nether ? "Presque ! Réessaie ou passe 🙂" : "Presque ! Corrige les blocs rouges 🔴") : "";
+  const feedback = errare ? `${encouragement} ${nether ? "Réessaie ou passe 🙂" : "Corrige les blocs rouges 🔴"}` : "";
 
   return (
     <Screen>

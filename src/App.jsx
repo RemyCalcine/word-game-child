@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { prepareList } from "./wordList.js";
 import { loadConfig, saveConfig } from "./config.js";
+import { feliciter } from "./messages.js";
 import { amorcerVoix } from "./voice.js";
 import { GroundBackground } from "./components/GroundBackground.jsx";
 import { HudBar } from "./components/HudBar.jsx";
@@ -132,7 +133,6 @@ export default function App() {
     return () => clearTimeout(t);
   }, [phase, netherIndex]);
 
-  const hello = prenom ? ` ${prenom}` : "";
   const hudIndex = isNether ? netherIndex : index;
   const hudTotal = isNether ? motsNether.length : motsListe.length;
 
@@ -163,12 +163,13 @@ export default function App() {
         )}
         {phase === "learn" && <LearnScreen key={index} word={word} nbSteps={nbEtapes} onNext={versEtapeSuivante} />}
         {phase === "syll" && (
-          <SyllablesScreen key={index} word={word} onDone={() => setPhase("write")} onScore={(n) => setXp((x) => x + n)} />
+          <SyllablesScreen key={index} word={word} prenom={prenom} onDone={() => setPhase("write")} onScore={(n) => setXp((x) => x + n)} />
         )}
         {phase === "write" && (
           <WriteScreen
             key={index}
             word={word}
+            prenom={prenom}
             label={`⛏️ Étape ${nbEtapes}/${nbEtapes} — Écris le mot`}
             hint="⌨️ Tape le mot au clavier (Retour arrière pour corriger)"
             onWin={gagnerMot}
@@ -179,7 +180,7 @@ export default function App() {
           <RecapScreen
             title="Mots réussis !"
             prenom={prenom}
-            voice={netherDone ? `Bravo${hello} ! Voici ton total.` : `Félicitations${hello} ! Tu as réussi tous les mots !`}
+            voice={netherDone ? `${feliciter(prenom)} Voici ton total.` : `${feliciter(prenom)} Tu as réussi tous les mots !`}
             words={motsListe.map((m) => ({ mot: m.mot, ok: true }))}
             netherWords={netherDone ? netherResults : undefined}
             total={netherDone ? xp + netherPoints : xp}
@@ -197,6 +198,7 @@ export default function App() {
             key={"n" + netherIndex}
             word={word}
             nether
+            prenom={prenom}
             label="🔊 Écoute et écris de mémoire"
             hint="Aucun bloc ne t'aide ici. Tape ce que tu entends."
             onWin={gagnerMotNether}
@@ -207,7 +209,7 @@ export default function App() {
         {phase === "n-end" && (
           <RecapScreen
             title="Nether terminé !"
-            voice="Bravo ! Tu as fini l'épreuve du Nether !"
+            voice={`${feliciter(prenom)} Tu as fini l'épreuve du Nether !`}
             nether
             words={netherResults}
             total={netherPoints}

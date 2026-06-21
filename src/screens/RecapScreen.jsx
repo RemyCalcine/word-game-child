@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Screen } from "./Screen.jsx";
 import { McLogo } from "../components/McLogo.jsx";
 import { BlockButton } from "../components/BlockButton.jsx";
@@ -23,9 +23,10 @@ function ListeMots({ mots }) {
 // nouveau après le Nether avec la section Nether en plus) et comme écran de fin
 // du Nether. Ton toujours positif : un mot non réussi est « passé », jamais perdu.
 export function RecapScreen({ title, voice, prenom, nether = false, words, netherWords, total, primaryLabel, onPrimary, secondaryLabel, onSecondary, onNether }) {
+  const [spokenLine] = useState(voice); // figé au montage : pas de re-speak si le parent re-render
   useEffect(() => {
-    parler(voice);
-  }, [voice]);
+    parler(spokenLine);
+  }, [spokenLine]);
 
   return (
     <Screen>

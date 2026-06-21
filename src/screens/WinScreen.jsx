@@ -1,14 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Screen } from "./Screen.jsx";
 import { McLogo } from "../components/McLogo.jsx";
 import { BlockButton } from "../components/BlockButton.jsx";
 import { Diamond } from "../components/Diamond.jsx";
 import { parler } from "../voice.js";
+import { feliciter } from "../messages.js";
 
 export function WinScreen({ word, prenom, onNext }) {
+  const [message] = useState(() => feliciter(prenom)); // une félicitation au hasard, figée
   useEffect(() => {
-    parler(prenom ? `Bravo ${prenom} !` : "Bravo !");
-  }, [prenom]);
+    parler(message);
+  }, [message]);
 
   return (
     <Screen>

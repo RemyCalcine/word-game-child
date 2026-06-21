@@ -4,6 +4,7 @@ import { StepLabel } from "../components/StepLabel.jsx";
 import { SyllableTile } from "../components/SyllableTile.jsx";
 import { BlockButton } from "../components/BlockButton.jsx";
 import { parler } from "../voice.js";
+import { feliciter } from "../messages.js";
 
 function melanger(arr) {
   const a = arr.slice();
@@ -15,7 +16,7 @@ function melanger(arr) {
   return a;
 }
 
-export function SyllablesScreen({ word, onDone, onScore }) {
+export function SyllablesScreen({ word, prenom, onDone, onScore }) {
   const target = word.syllabes;
   const [placees, setPlacees] = useState(0);
   const [erreurs, setErreurs] = useState(0);
@@ -43,7 +44,7 @@ export function SyllablesScreen({ word, onDone, onScore }) {
         // On laisse la dernière syllabe finir avant de féliciter (sinon elle est
         // coupée et l'enfant entend « Bravo » tout de suite).
         parler(target[item.idx], 0.8, () => {
-          parler(`${sansFaute ? "Parfait" : "Bravo"} ! Tu as trouvé : ${word.mot}`, 0.85, onDone);
+          parler(`${feliciter(prenom)} Tu as trouvé : ${word.mot}`, 0.85, onDone);
         });
       } else {
         parler(target[item.idx], 0.8);
