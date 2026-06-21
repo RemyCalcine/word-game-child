@@ -28,7 +28,7 @@ Univers visuel inspiré de **Minecraft** (l'enfant adore) : blocs, pixel art, pa
 
 Application **Vite + React** (JS, pas TypeScript). Pas de stack lourde sans raison : pas de backend, pas de compte, pas de persistance (le score reste en mémoire pour la session).
 
-Pour chaque mot, 3 étapes (machine à états entre écrans React) : **Découverte → 🧩 Syllabes → ✏️ Écriture → 🎉 Bravo**. Un mot d'une seule syllabe saute l'étape Syllabes. Un mode optionnel **Nether** (épreuve de rappel sans blocs-lettres) est accessible depuis l'écran de fin si au moins un mot est tagué `nether: true`.
+Pour chaque mot, 3 étapes (machine à états entre écrans React) : **Découverte → 🧩 Syllabes → ✏️ Écriture → 🎉 Bravo**. Un mot d'une seule syllabe saute l'étape Syllabes. Un mode optionnel **Nether** (épreuve de rappel sans blocs-lettres) est accessible depuis la page de récap de fin si au moins un mot est tagué `nether: true`. En Nether, l'enfant peut **réessayer** ou **passer** un mot après une erreur (jamais d'« échec » affiché) ; la `RecapScreen` commune (fin d'overworld *et* sortie du Nether) liste les mots et le total de diamants cumulé.
 
 Fichiers principaux (`src/`) :
 
@@ -36,7 +36,7 @@ Fichiers principaux (`src/`) :
 - `src/words.js` — **la seule chose que le parent édite** : le tableau `MOTS`. Une entrée = `"mot"`, `"mo-t"` (tirets = découpage syllabes choisi) ou `{ mot, indice, nether }`. Le champ optionnel `nether: true` tague un mot pour l'épreuve Nether (sinon le portail Nether n'apparaît pas du tout).
 - `src/wordList.js` — logique pure portée de l'ancien `game.js` : `normaliser()` et `decouperAuto()` (découpage syllabes), produit `MOTS_LISTE` (chaque entrée → `{ mot, indice, syllabes, nether }`).
 - `src/voice.js` — synthèse vocale (`speechSynthesis`, fr-FR) : `amorcerVoix`/`parler`/`annulerVoix`.
-- `src/screens/` — un composant par écran (`StartScreen`, `LearnScreen`, `SyllablesScreen`, `WriteScreen`, `WinScreen`, `EndScreen`, plus `screens/nether/` pour le mode Nether). `WriteScreen` est réutilisé pour l'écriture normale et pour l'épreuve Nether via une prop.
+- `src/screens/` — un composant par écran (`StartScreen`, `LearnScreen`, `SyllablesScreen`, `WriteScreen`, `WinScreen`, `RecapScreen`, plus `screens/nether/` pour le mode Nether). `WriteScreen` est réutilisé pour l'écriture normale et pour l'épreuve Nether via une prop (le mode Nether ajoute les boutons « Nouvelle tentative » / « Passer »). `RecapScreen` est la page de récap commune affichée en fin d'overworld et en sortie de Nether.
 - `src/components/` — composants visuels du thème « Minecraft » (boutons en relief, blocs-lettres, tuiles syllabes, HUD, etc.), thème CSS dans `src/styles/tokens.css` et `src/index.css`.
 
 Conventions importantes :

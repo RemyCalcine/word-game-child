@@ -5,7 +5,7 @@ import { LetterTile } from "../components/LetterTile.jsx";
 import { BlockButton } from "../components/BlockButton.jsx";
 import { parler } from "../voice.js";
 
-export function WriteScreen({ word, label, hint, nether = false, onWin }) {
+export function WriteScreen({ word, label, hint, nether = false, onWin, onSkip }) {
   const [saisie, setSaisie] = useState("");
   const [shake, setShake] = useState(false);
   const gagne = useRef(false);
@@ -13,10 +13,10 @@ export function WriteScreen({ word, label, hint, nether = false, onWin }) {
   useEffect(() => {
     gagne.current = false;
     setSaisie("");
-    if (nether) {
-      const t = setTimeout(() => parler(word.mot), 300);
-      return () => clearTimeout(t);
-    }
+    // On prononce le mot complet en arrivant à l'écriture (le petit délai laisse
+    // finir la parole de l'écran précédent, sinon on n'entend que sa fin).
+    const t = setTimeout(() => parler(word.mot), 300);
+    return () => clearTimeout(t);
   }, [word.mot, nether]);
 
   useEffect(() => {
@@ -45,7 +45,8 @@ export function WriteScreen({ word, label, hint, nether = false, onWin }) {
     }
   }, [saisie, word.mot, onWin]);
 
-  const feedback = saisie.length === word.mot.length && saisie !== word.mot ? "Presque ! Corrige les blocs rouges 🔴" : "";
+  const errare = saisie.length === word.mot.length && saisie !== word.mot;
+  const feedback = errare ? (nether ? "Presque ! Réessaie ou passe 🙂" : "Presque ! Corrige les blocs rouges 🔴") : "";
 
   return (
     <Screen>
@@ -61,6 +62,12 @@ export function WriteScreen({ word, label, hint, nether = false, onWin }) {
       <p style={{ fontSize: "var(--text-md)", fontStyle: "italic", color: "var(--cream)", opacity: 0.9, margin: 0 }}>
         {feedback || hint}
       </p>
+      {nether && errare ? (
+        <div style={{ display: "flex", gap: "var(--gap-row)", flexWrap: "wrap", justifyContent: "center" }}>
+          <BlockButton variant="secondary" onClick={() => setSaisie("")}>🔄 Nouvelle tentative</BlockButton>
+          <BlockButton variant="neutral" onClick={onSkip}>⏭️ Passer</BlockButton>
+        </div>
+      ) : null}
     </Screen>
   );
 }

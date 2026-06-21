@@ -25,15 +25,8 @@
 // ===========================================================================
 
 export const MOTS = [
-  "A-bel",
-  "A-man-dine",
   "ci-el",
   { mot: "mi-lieu", indice: "Le centre de quelque chose", nether: true },
   "fa-mille",
   { mot: "fille", nether: true },
-  "yeux",
-  "or-eilles",
-  "chien",
-  "pre-mier",
-  "pre-mi-ère",
 ];

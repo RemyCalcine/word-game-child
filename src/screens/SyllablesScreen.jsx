@@ -35,13 +35,18 @@ export function SyllablesScreen({ word, onDone, onScore }) {
       setPosees((p) => ({ ...p, [item.idx]: true }));
       const np = placees + 1;
       setPlacees(np);
-      parler(target[item.idx], 0.8);
       if (np === target.length) {
         termine.current = true;
         const sansFaute = erreurs === 0;
         onScore(5 + (sansFaute ? 5 : 0));
         setFeedback(sansFaute ? "Parfait, sans erreur ! 🌟 +10 💎" : "Bien joué ! 🧩 +5 💎");
-        parler(`${sansFaute ? "Parfait" : "Bravo"} ! Tu as trouvé : ${word.mot}`, 0.85, onDone);
+        // On laisse la dernière syllabe finir avant de féliciter (sinon elle est
+        // coupée et l'enfant entend « Bravo » tout de suite).
+        parler(target[item.idx], 0.8, () => {
+          parler(`${sansFaute ? "Parfait" : "Bravo"} ! Tu as trouvé : ${word.mot}`, 0.85, onDone);
+        });
+      } else {
+        parler(target[item.idx], 0.8);
       }
     } else {
       setErreurs((e) => e + 1);
