@@ -9,7 +9,10 @@ export function LearnScreen({ word, nbSteps, onNext }) {
   const [spelling, setSpelling] = useState(-1);
 
   useEffect(() => {
-    parler(word.mot);
+    // Petit délai : laisse l'écran s'afficher avant de parler, sinon le moteur
+    // coupe le début du mot (« …lieu » pour « milieu »), surtout sur le 1er mot.
+    const t = setTimeout(() => parler(word.mot), 300);
+    return () => clearTimeout(t);
   }, [word.mot]);
 
   function epeler() {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Screen } from "./Screen.jsx";
 import { StepLabel } from "../components/StepLabel.jsx";
 import { SyllableTile } from "../components/SyllableTile.jsx";
@@ -25,10 +25,6 @@ export function SyllablesScreen({ word, prenom, onDone, onScore }) {
   const [feedback, setFeedback] = useState("");
   const [shakeIdx, setShakeIdx] = useState(-1);
   const termine = useRef(false);
-
-  useEffect(() => {
-    parler(word.mot);
-  }, [word.mot]);
 
   function cliquer(item) {
     if (termine.current || posees[item.idx]) return;

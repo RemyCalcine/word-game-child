@@ -25,7 +25,10 @@ function ListeMots({ mots }) {
 export function RecapScreen({ title, voice, prenom, nether = false, words, netherWords, total, primaryLabel, onPrimary, secondaryLabel, onSecondary, onNether }) {
   const [spokenLine] = useState(voice); // figé au montage : pas de re-speak si le parent re-render
   useEffect(() => {
-    parler(spokenLine);
+    // Petit délai : laisse l'écran s'afficher avant de parler, sinon le moteur
+    // coupe le début de la phrase (cf. WriteScreen / WinScreen).
+    const t = setTimeout(() => parler(spokenLine), 300);
+    return () => clearTimeout(t);
   }, [spokenLine]);
 
   return (

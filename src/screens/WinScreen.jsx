@@ -9,7 +9,10 @@ import { feliciter } from "../messages.js";
 export function WinScreen({ word, prenom, onNext }) {
   const [message] = useState(() => feliciter(prenom)); // une félicitation au hasard, figée
   useEffect(() => {
-    parler(message);
+    // Petit délai : laisse l'écran s'afficher (et la parole précédente se finir)
+    // avant de parler, sinon le moteur coupe le début (« …nifique » pour « magnifique »).
+    const t = setTimeout(() => parler(message), 300);
+    return () => clearTimeout(t);
   }, [message]);
 
   return (

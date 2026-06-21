@@ -6,7 +6,10 @@ import { parler } from "../../voice.js";
 
 export function NetherIntroScreen({ onStart }) {
   useEffect(() => {
-    parler("Bienvenue dans le Nether. Écris les mots de mémoire.");
+    // Petit délai : laisse l'écran s'afficher avant de parler, sinon le moteur
+    // coupe le début de la phrase (cf. LearnScreen / WriteScreen).
+    const t = setTimeout(() => parler("Bienvenue dans le Nether. Écris les mots de mémoire."), 300);
+    return () => clearTimeout(t);
   }, []);
 
   return (
