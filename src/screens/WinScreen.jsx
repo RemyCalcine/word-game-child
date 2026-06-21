@@ -5,10 +5,10 @@ import { BlockButton } from "../components/BlockButton.jsx";
 import { Diamond } from "../components/Diamond.jsx";
 import { parler } from "../voice.js";
 
-export function WinScreen({ word, onNext }) {
+export function WinScreen({ word, prenom, onNext }) {
   useEffect(() => {
-    parler("Bravo !");
-  }, []);
+    parler(prenom ? `Bravo ${prenom} !` : "Bravo !");
+  }, [prenom]);
 
   return (
     <Screen>

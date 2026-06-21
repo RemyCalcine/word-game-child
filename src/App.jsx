@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { MOTS } from "./words.js";
+import React, { useEffect, useMemo, useState } from "react";
 import { prepareList } from "./wordList.js";
+import { loadConfig, saveConfig } from "./config.js";
 import { amorcerVoix } from "./voice.js";
 import { GroundBackground } from "./components/GroundBackground.jsx";
 import { HudBar } from "./components/HudBar.jsx";
@@ -13,10 +13,11 @@ import { RecapScreen } from "./screens/RecapScreen.jsx";
 import { NetherIntroScreen } from "./screens/nether/NetherIntroScreen.jsx";
 import { NetherFlashScreen } from "./screens/nether/NetherFlashScreen.jsx";
 
-const MOTS_LISTE = prepareList(MOTS);
-const MOTS_NETHER = MOTS_LISTE.filter((m) => m.nether);
-
 export default function App() {
+  const [config] = useState(loadConfig); // lu une fois au démarrage
+  const [entrees, setEntrees] = useState(config.mots); // [{ mot, indice, nether }]
+  const [prenom, setPrenom] = useState(config.prenom);
+
   const [mode, setMode] = useState("overworld"); // 'overworld' | 'nether'
   const [phase, setPhase] = useState("start");
   const [index, setIndex] = useState(0);
@@ -25,18 +26,43 @@ export default function App() {
   const [netherResults, setNetherResults] = useState([]); // [{ mot, ok }]
   const [netherDone, setNetherDone] = useState(false);
 
+  const motsListe = useMemo(() => prepareList(entrees), [entrees]);
+  const motsNether = useMemo(() => motsListe.filter((m) => m.nether), [motsListe]);
+
   const isNether = mode === "nether";
   const netherPoints = netherResults.filter((r) => r.ok).length * 15;
-  const word = isNether ? MOTS_NETHER[netherIndex] : MOTS_LISTE[index];
+  const word = isNether ? motsNether[netherIndex] : motsListe[index];
   const nbEtapes = word && word.syllabes.length > 1 ? 3 : 2;
   const showHud = !["start", "end", "n-intro", "n-end"].includes(phase);
   const canGoBack = phase === "write" || phase === "syll" || (phase === "learn" && index > 0);
 
-  function commencer() {
-    amorcerVoix();
+  function reset(versPhase) {
     setIndex(0);
     setXp(0);
-    setPhase("learn");
+    setNetherIndex(0);
+    setNetherResults([]);
+    setNetherDone(false);
+    setMode("overworld");
+    setPhase(versPhase);
+  }
+
+  function enregistrerConfig(nextEntrees, nextPrenom) {
+    setEntrees(nextEntrees);
+    setPrenom(nextPrenom);
+    saveConfig({ prenom: nextPrenom, mots: nextEntrees });
+  }
+
+  function commencer() {
+    amorcerVoix();
+    reset("learn");
+  }
+
+  function recommencer() {
+    reset("learn");
+  }
+
+  function quitterPartie() {
+    reset("start"); // retour à l'accueil pour reconfigurer les mots si besoin
   }
 
   function retour() {
@@ -58,21 +84,11 @@ export default function App() {
   }
 
   function motSuivant() {
-    if (index + 1 >= MOTS_LISTE.length) setPhase("end");
+    if (index + 1 >= motsListe.length) setPhase("end");
     else {
       setIndex(index + 1);
       setPhase("learn");
     }
-  }
-
-  function recommencer() {
-    setIndex(0);
-    setXp(0);
-    setNetherIndex(0);
-    setNetherResults([]);
-    setNetherDone(false);
-    setMode("overworld");
-    setPhase("learn");
   }
 
   function entrerNether() {
@@ -93,7 +109,7 @@ export default function App() {
   }
 
   function prochainMotNether() {
-    if (netherIndex + 1 >= MOTS_NETHER.length) setPhase("n-end");
+    if (netherIndex + 1 >= motsNether.length) setPhase("n-end");
     else {
       setNetherIndex(netherIndex + 1);
       setPhase("n-write");
@@ -116,8 +132,9 @@ export default function App() {
     return () => clearTimeout(t);
   }, [phase, netherIndex]);
 
+  const hello = prenom ? ` ${prenom}` : "";
   const hudIndex = isNether ? netherIndex : index;
-  const hudTotal = isNether ? MOTS_NETHER.length : MOTS_LISTE.length;
+  const hudTotal = isNether ? motsNether.length : motsListe.length;
 
   return (
     <div
@@ -135,7 +152,15 @@ export default function App() {
           justifyContent: "center", padding: "var(--pad-screen)",
         }}
       >
-        {phase === "start" && <StartScreen wordCount={MOTS_LISTE.length} onStart={commencer} />}
+        {phase === "start" && (
+          <StartScreen
+            wordCount={motsListe.length}
+            prenom={prenom}
+            entrees={entrees}
+            onSaveConfig={enregistrerConfig}
+            onStart={commencer}
+          />
+        )}
         {phase === "learn" && <LearnScreen key={index} word={word} nbSteps={nbEtapes} onNext={versEtapeSuivante} />}
         {phase === "syll" && (
           <SyllablesScreen key={index} word={word} onDone={() => setPhase("write")} onScore={(n) => setXp((x) => x + n)} />
@@ -149,17 +174,20 @@ export default function App() {
             onWin={gagnerMot}
           />
         )}
-        {phase === "win" && <WinScreen word={word} onNext={motSuivant} />}
+        {phase === "win" && <WinScreen word={word} prenom={prenom} onNext={motSuivant} />}
         {phase === "end" && (
           <RecapScreen
             title="Mots réussis !"
-            voice={netherDone ? "Bravo ! Voici ton total." : "Félicitations ! Tu as réussi tous les mots !"}
-            words={MOTS_LISTE.map((m) => ({ mot: m.mot, ok: true }))}
+            prenom={prenom}
+            voice={netherDone ? `Bravo${hello} ! Voici ton total.` : `Félicitations${hello} ! Tu as réussi tous les mots !`}
+            words={motsListe.map((m) => ({ mot: m.mot, ok: true }))}
             netherWords={netherDone ? netherResults : undefined}
             total={netherDone ? xp + netherPoints : xp}
             primaryLabel="🔁 Rejouer"
             onPrimary={recommencer}
-            onNether={!netherDone && MOTS_NETHER.length > 0 ? entrerNether : undefined}
+            secondaryLabel="🚪 Quitter la partie"
+            onSecondary={quitterPartie}
+            onNether={!netherDone && motsNether.length > 0 ? entrerNether : undefined}
           />
         )}
 
