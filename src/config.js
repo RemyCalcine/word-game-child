@@ -7,8 +7,8 @@ const KEY = "motsblocs-config-v1";
 
 function toEntry(m) {
   return typeof m === "string"
-    ? { mot: m, indice: "", nether: false }
-    : { mot: m.mot || "", indice: m.indice || "", nether: !!m.nether };
+    ? { mot: m, indice: "", nether: false, actif: true }
+    : { mot: m.mot || "", indice: m.indice || "", nether: !!m.nether, actif: m.actif !== false };
 }
 
 export function defaultMots() {
@@ -30,7 +30,7 @@ export function loadConfig() {
 
 export function saveConfig({ prenom, mots }) {
   try {
-    const clean = mots.map(({ mot, indice, nether }) => ({ mot, indice, nether }));
+    const clean = mots.map(({ mot, indice, nether, actif }) => ({ mot, indice, nether, actif: actif !== false }));
     localStorage.setItem(KEY, JSON.stringify({ prenom, mots: clean }));
   } catch {
     // localStorage indisponible (navigation privée, quota plein) : on reste en mémoire.
