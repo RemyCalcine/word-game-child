@@ -27,7 +27,10 @@ export default function App() {
   const [netherResults, setNetherResults] = useState([]); // [{ mot, ok }]
   const [netherDone, setNetherDone] = useState(false);
 
-  const motsListe = useMemo(() => prepareList(entrees), [entrees]);
+  const motsListe = useMemo(
+    () => prepareList(entrees.filter((e) => e.actif !== false)),
+    [entrees]
+  );
   const motsNether = useMemo(() => motsListe.filter((m) => m.nether), [motsListe]);
 
   const isNether = mode === "nether";
